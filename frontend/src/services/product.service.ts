@@ -1,5 +1,5 @@
 import api from './api';
-import { API_ENDPOINTS, API_BASE_URL } from '../constants/api';
+import { API_ENDPOINTS } from '../constants/api';
 
 export interface ProductResponse {
   MaSanPham: number;
@@ -35,18 +35,35 @@ export const getProductById = async (id: number): Promise<ProductResponse> => {
 };
 
 export const getProductsByCategory = async (categoryId: number, page = 1, limit = 10): Promise<ProductListResponse> => {
-  const response = await api.get(`${API_ENDPOINTS.PRODUCT.GET_BY_CATEGORY(categoryId)}?page=${page}&limit=${limit}`);
-  return response.data;
+  // PHP backend: filter trên frontend nếu không có endpoint riêng
+  const response = await api.get(`${API_ENDPOINTS.PRODUCT.GET_ALL}?page=${page}&limit=${limit}`);
+  const all = response.data.products.filter((p: ProductResponse) => p.MaDanhMuc === categoryId);
+  return {
+    total: all.length,
+    totalPages: Math.ceil(all.length / limit),
+    currentPage: page,
+    products: all.slice((page - 1) * limit, page * limit)
+  };
 };
 
 export const searchProducts = async (query: string, page = 1, limit = 10): Promise<ProductListResponse> => {
-  const response = await api.get(`${API_ENDPOINTS.PRODUCT.SEARCH}?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
-  return response.data;
+  // PHP backend: filter trên frontend nếu không có endpoint riêng
+  const response = await api.get(`${API_ENDPOINTS.PRODUCT.GET_ALL}?page=1&limit=1000`); // lấy nhiều để filter
+  const all = response.data.products.filter((p: ProductResponse) =>
+    p.TenSanPham.toLowerCase().includes(query.toLowerCase()) ||
+    (p.MoTa && p.MoTa.toLowerCase().includes(query.toLowerCase()))
+  );
+  return {
+    total: all.length,
+    totalPages: Math.ceil(all.length / limit),
+    currentPage: page,
+    products: all.slice((page - 1) * limit, page * limit)
+  };
 };
 
 // Admin functions
 export const createProduct = async (productData: FormData): Promise<ProductResponse> => {
-  const response = await api.post(API_ENDPOINTS.ADMIN.PRODUCTS.CREATE, productData, {
+  const response = await api.post(API_ENDPOINTS.PRODUCT.CREATE, productData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -55,7 +72,6 @@ export const createProduct = async (productData: FormData): Promise<ProductRespo
 };
 
 export const updateProduct = async (id: number, productData: FormData): Promise<ProductResponse> => {
-  console.log('Sending update request to:', API_ENDPOINTS.PRODUCT.UPDATE(id));
   const response = await api.put(API_ENDPOINTS.PRODUCT.UPDATE(id), productData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -65,5 +81,5 @@ export const updateProduct = async (id: number, productData: FormData): Promise<
 };
 
 export const deleteProduct = async (id: number): Promise<void> => {
-  await api.delete(API_ENDPOINTS.ADMIN.PRODUCTS.DELETE(id));
+  await api.delete(API_ENDPOINTS.PRODUCT.DELETE(id));
 }; 
