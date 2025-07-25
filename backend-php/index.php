@@ -1,8 +1,7 @@
 <?php
-// index.php - Entrypoint cho REST API PHP
 require_once __DIR__ . '/config/database.php';
 
-// Autoload controllers/models/utils nếu cần
+// Autoload controllers/models/middlewares/utils
 spl_autoload_register(function ($class) {
     foreach ([
         __DIR__ . '/controllers/' . $class . '.php',
@@ -29,46 +28,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Parse URL
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = trim($uri, '/');
-$segments = explode('/', $uri);
+$method = $_SERVER['REQUEST_METHOD'];
 
-// Route: /api/{resource}/{id?}
-if (count($segments) >= 2 && $segments[0] === 'api') {
-    $resource = $segments[1];
-    $id = $segments[2] ?? null;
-    $method = $_SERVER['REQUEST_METHOD'];
-    $input = json_decode(file_get_contents('php://input'), true) ?? [];
-    $query = $_GET;
+// Load routes
+$routes = require __DIR__ . '/routes/web.php';
 
-    // Map resource to controller
-    $controllerMap = [
-        'auth' => 'AuthController',
-        'products' => 'ProductController',
-        'categories' => 'CategoryController',
-        'orders' => 'OrderController',
-        'users' => 'UserController',
-        'admin' => 'AdminController',
-        'order-details' => 'OrderDetailController',
-        'upload' => 'UploadController',
-    ];
-    if (isset($controllerMap[$resource])) {
-        $controllerName = $controllerMap[$resource];
+// Tìm route phù hợp
+$found = false;
+foreach ($routes as $route) {
+    $routePath = trim($route['path'], '/');
+    $pattern = preg_replace('/\{[^\/]+\}/', '([^/]+)', $routePath);
+    $pattern = str_replace('/', '\/', $pattern);
+    if (strtoupper($route['method']) === $method && preg_match('/^' . $pattern . '$/', $uri, $matches)) {
+        $found = true;
+        $controllerName = $route['controller'];
+        $action = $route['action'];
+        $id = isset($matches[1]) ? $matches[1] : null;
+        $input = json_decode(file_get_contents('php://input'), true) ?? [];
+        $query = $_GET;
+        // Middleware
+        if (isset($route['middleware'])) {
+            if ($route['middleware'] === 'AuthMiddleware') {
+                AuthMiddleware::check();
+            } elseif ($route['middleware'] === 'RoleMiddleware') {
+                $roles = $route['roles'] ?? [];
+                RoleMiddleware::check($roles);
+            }
+        }
+        // Gọi controller
         if (!class_exists($controllerName)) {
             http_response_code(404);
             echo json_encode(['message' => 'API không tồn tại']);
             exit;
         }
         $controller = new $controllerName();
-        // Gọi action phù hợp
-        $action = strtolower($method);
-        if (method_exists($controller, $action)) {
-            $controller->$action($id, $input, $query);
-        } else {
+        if (!method_exists($controller, $action)) {
             http_response_code(405);
             echo json_encode(['message' => 'Phương thức không được hỗ trợ']);
+            exit;
         }
+        $controller->$action($id, $input, $query);
         exit;
     }
 }
-// Nếu không khớp route
-http_response_code(404);
-echo json_encode(['message' => 'Không tìm thấy API endpoint']);
+if (!$found) {
+    http_response_code(404);
+    echo json_encode(['message' => 'Không tìm thấy API endpoint']);
+}

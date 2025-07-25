@@ -1,169 +1,109 @@
-# 🛍️ Shop App - React E-commerce Solution
+# Shop App - Hệ thống Quản lý Bán Hoa & Quà tặng
 
-[![Release](https://img.shields.io/badge/GitHub-Release_v3.2.1-2088FF?logo=github&logoColor=white)](https://github.com/BlackDeathWind/shop-app/releases)
-[![License](https://img.shields.io/badge/License-MIT-A31F34?logo=open-source-initiative&logoColor=white)](LICENSE)
+## 1. Yêu cầu hệ thống
+- **XAMPP** (hoặc PHP >= 8.0, MySQL >= 5.7)
+- **Node.js** >= 16
+- **npm** >= 8
 
-**Ứng dụng web giao hoa và quà tặng**.
+## 2. Cài đặt & Khởi chạy Backend (PHP)
+### 2.1. Cấu hình MySQL
+- Mở XAMPP, bật **Apache** và **MySQL**.
+- Tạo database `shop`:
+  - Import các file SQL:
+    - `1_create_schema_mysql.sql`
+    - `2_create_tables_mysql.sql`
+    - `3_insert_sample_data_mysql.sql`
+- Thông tin kết nối mặc định:
+  - Host: `localhost`
+  - Port: `3306`
+  - Username: `root`
+  - Password: `21050043` (nếu không kết nối được, thử password rỗng)
 
-> **Live Demo**: (Hiện chưa có) (Google Drive)
+### 2.2. Cấu hình backend PHP
+- Đường dẫn backend: `shop-app/backend-php`
+- Cấu trúc thư mục:
+  - `controllers/` - Xử lý logic API
+  - `models/` - Kết nối và thao tác DB
+  - `middlewares/` - Xác thực, phân quyền
+  - `routes/web.php` - Định nghĩa route
+  - `public/uploads/` - Lưu file upload
+  - `index.php` - Entrypoint
+- Không cần cài đặt thêm package ngoài (chạy thuần PHP + PDO)
 
-## 🚀 Tính Năng Nổi Bật
+### 2.3. Khởi chạy backend
+- Đảm bảo XAMPP Apache đã bật.
+- Truy cập API qua đường dẫn: `http://localhost/shop-app/backend-php/index.php/api/...`
+- Nếu dùng Windows, đảm bảo thư mục `public/uploads` có quyền ghi.
 
-| Module         | Chi Tiết                                                                 |
-|----------------|--------------------------------------------------------------------------|
-| **Xác thực**   | Đăng nhập/Đăng ký với API backend truy vấn tới SQL Server                |
-| **Sản phẩm**   | Danh sách sản phẩm đa danh mục, Tìm kiếm, Lọc,                           |
-| **Giỏ hàng**   | Quản lý giỏ hàng bằng weblocal (không phải lưu trong cơ sở dữ liệu)      |
-| **Thanh toán** | Hoá đơn, Cập nhật số lượng sản phẩm khi thanh toán thành công            |
-| **Hồ sơ**      | Theo dõi đơn hàng, Lịch sử mua hàng, Cập nhật thông tin cá nhân          |
-| **Quản trị**   | CRUD sản phẩm (Admin Dashboard + Nhân viên Dashboard - riêng biệt)       |
+#### **Kiểm tra API backend đã hoạt động**
+- Sau khi bật Apache và MySQL, kiểm tra API bằng cách:
+  - **Cách 1:** Mở trình duyệt và truy cập: [http://localhost/shop-app/backend-php/index.php/api/categories](http://localhost/shop-app/backend-php/index.php/api/categories)
+    - Nếu API hoạt động, bạn sẽ thấy danh sách các danh mục sản phẩm trả về dạng JSON.
+  - **Cách 2:** Sử dụng lệnh `curl` trong terminal:
+    ```bash
+    curl http://localhost/shop-app/backend-php/index.php/api/categories
+    ```
+    - Nếu API hoạt động, sẽ trả về dữ liệu JSON danh mục sản phẩm.
+- Nếu không nhận được dữ liệu, kiểm tra lại cấu hình XAMPP, database, hoặc xem log lỗi của Apache.
 
-## 📱 Hình Ảnh Demo
-
-| Đăng Nhập            | Trang Chủ           | Hồ Sơ             |
-|----------------------|---------------------|-------------------|
-| ![Login](demo/login.png) | ![Home](demo/home.png) | ![Profile](demo/profile.png) |
-
-| Thanh Toán          | Giỏ Hàng            | Hoá đơn            |
-|---------------------|---------------------|--------------------|
-| ![Checkout](demo/payment.png) | ![Cart](demo/cart.png) | ![Order](demo/order.png) |
-
-| Admin Dashboard     | Quản lý sản phẩm    | Quản lý đơn hàng   |
-|---------------------|---------------------|--------------------|
-| ![Dashboard](demo/payment.png) | ![Product_management](demo/product_management.png) | ![Order_management](demo/order_management.png) |
-
-## 🛠 Công Nghệ Sử Dụng
-![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-
-**Frontend Framework**  
-- React 19 (TypeScript)
-- Vite (cho phát triển React + TypeScript)
-
-**Backend**
-- Node.js – Nền tảng chạy server-side JavaScript.
-- Express.js – Framework xây dựng chính cho backend, tổ chức theo mô hình MVC.
-- TypeScript – Dễ bảo trì, phát triển lâu dài.
-- Sequelize ORM – Quản lý truy vấn và ánh xạ dữ liệu giữa Node.js và cơ sở dữ liệu.
-- JWT (JSON Web Token) – Xác thực và phân quyền người dùng (Admin - Nhân viên - Khách hàng).
-- Multer – Xử lý upload file (hình ảnh sản phẩm).
-- Bcrypt – Mã hoá mật khẩu người dùng vào SQL Server.
-- CORS, Helmet, v.v. – Bảo mật API.
-
-**Database**
-- Microsoft SQL Server – Lưu trữ dữ liệu.
-- Sequelize – ORM mapping giữa các model TypeScript và bảng dữ liệu.
-
-**UI/UX Libraries**  
-- Tailwind CSS – Framework CSS utility-first.
-- Lucide React – Bộ icon vector hiện đại.
-- Custom Toast/Notification – Hệ thống thông báo.
-- React Router DOM v7 – Routing động, bảo vệ route, phân quyền truy cập.
-- Context API + Custom Hooks – Quản lý trạng thái xác thực, giỏ hàng, toast, v.v.
-
-**Payment (thanh toán)**  
-- Thanh toán giả lập, không thật (Test Mode).
-
-## ⚙️ Cài Đặt Dự Án
-
-### Yêu Cầu Hệ Thống
-- Node.js (>= 14)
-
-### Bước 1: Clone repository (tải dự án này về máy, bật Terminal của Visiual Studio Code hoặc các IDE khác để nhập lệnh)
+## 3. Cài đặt & Khởi chạy Frontend (React)
+### 3.1. Cài đặt
 ```bash
-git clone https://github.com/BlackDeathWind/shop-app.git
-cd shop-app
-```
-
-### Bước 2: Cài đặt dependencies
-```bash
-# Tham chiếu đến thư mục frontend bằng cách:
-cd frontend
-```
-```bash
-# Sau khi tới đường dẫn frontend rồi thì thiết lập thư viện cần thiết (yêu cầu có ứng dụng Node.js trong máy):
-npm install
-```
-```bash
-# hoặc (Tuỳ, nhưng khuyến khích npm install)
-yarn install
-```
-```bash
-# Sau đó quay về thư mục gốc bằng cách:
-cd ..
-```
-```bash
-# Tiếp theo tham chiếu đến thư mục backend bằng cách:
-cd backend
-```
-```bash
-# Sau đó thiết lập thư viện cần thiết (yêu cầu có ứng dụng Node.js trong máy):
+cd shop-app/frontend
 npm install
 ```
 
-### Bước 3: Khởi chạy ứng dụng (lưu ý khởi chạy cả 2 frontend và backend cùng một lúc)
+### 3.2. Khởi chạy
 ```bash
-# ở Console Terminal frontend (cd frontend):
 npm run dev
 ```
-```bash
-# ở Console Terminal backend (cd backend):
-npm run dev
+- Truy cập: [http://localhost:5173](http://localhost:5173)
+- Frontend sẽ gọi API PHP qua `http://localhost/shop-app/backend-php/index.php/api`
+
+## 4. Đăng nhập & Tài khoản mẫu
+- **Admin:**
+  - SĐT: `0901234567`
+  - Mật khẩu: `Admin@1`
+- **Nhân viên:**
+  - SĐT: `0912345678` / `0912345679`
+  - Mật khẩu: `Nhanvien@1` / `Nhanvien@2`
+- **Khách hàng:**
+  - SĐT: `0923456789` / ...
+  - Mật khẩu: `Khachhang@1` / ...
+
+## 5. Một số lệnh hữu ích
+- **Cài lại node_modules:**
+  ```bash
+  cd frontend
+  rm -rf node_modules
+  npm install
+  ```
+- **Reset database:**
+  - Xóa và import lại các file SQL trong XAMPP phpMyAdmin.
+
+## 6. Ghi chú quan trọng
+- Nếu upload ảnh không được, kiểm tra quyền ghi thư mục `backend-php/public/uploads`.
+- Nếu API trả về lỗi 401/403, hãy đăng nhập lại hoặc kiểm tra quyền tài khoản.
+- Nếu sửa code backend, chỉ cần refresh trình duyệt (không cần build lại như Node.js).
+
+## 7. Cấu trúc thư mục chính
 ```
-- Frontend sẽ chạy ở http://localhost:5173/
-- Backend sẽ chạy ở http://localhost:5000/
-
-## 📁 Cấu Trúc Thư Mục Chính
-```bash
-── src/
-    ├── config/          # Cấu hình hệ thống, database
-    ├── controllers/     # Controller xử lý request/response
-    ├── interfaces/      # Định nghĩa interface, kiểu dữ liệu
-    ├── middlewares/     # Middleware xác thực, upload, ...
-    ├── models/          # Định nghĩa model ORM (Sequelize)
-    ├── routes/          # Định nghĩa các route (endpoint)
-    ├── services/        # Xử lý logic nghiệp vụ, truy vấn DB
-    └── utils/           # Hàm tiện ích, helper, logger, ...
-```
-
-## 🔧 Biến Môi Trường (3 tệp .sql mình đã chuẩn bị xẵn trong dự án, lưu ý chạy từng câu lệnh trong tệp đó trong SQL Server)
-Tạo file mới ghi là `.env` tại thư mục backend (Lưu ý điền thông tin của SQL Server theo hướng dẫn):
-```env
-PORT=5000
-NODE_ENV=development
-
-# Database
-DB_HOST=Điền server name
-DB_PORT=1433
-DB_NAME=tên data base
-DB_USER=sa
-DB_PASSWORD=mật khẩu ghi ở đây
-
-# JWT
-JWT_SECRET=shopapp_secret_key
-JWT_EXPIRES_IN=7d
-```
-
-## 👨‍💻 Tác Giả
-**Phạm Nguyễn Chu Nguyên - 21050043**  
-[![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/BlackDeathWind)
-[![LinkedIn]()(hiện chưa có)
-
-## 📜 Giấy Phép
-Dự án được cấp phép theo [MIT License](LICENSE)
-```
-## 💡 Lưu Ý Quan Trọng
-Bước Cài đặt dependencies và bước thiết lập Biến Môi Trường
+shop-app/
+  backend-php/
+    controllers/
+    models/
+    middlewares/
+    routes/
+    public/uploads/
+    index.php
+  frontend/
+    src/
+    ...
 ```
 
-2. **Performance Optimization**: Đã áp dụng các kỹ thuật:
-   - Lazyload cho mục đích load sản phẩm lên giao diện mượt mà thay vì load toàn bộ cùng một lúc và liên tiếp như vậy.
-   - Code splitting từng tệp để dễ quản lý và bảo trì
+## 8. Liên hệ & Hỗ trợ
+- Email: 21050043@student.bdu.edu.vn
+- Zalo: 0938 320 498
 
-3. **Các vấn đề đang phát triển (Kinh nghiệm và hạn chế)**:
-   - Chưa có kinh nghiệm xây dựng các lớp bảo mật nhiều tầng cho dự án dạng e-commerce này.
-   - Chưa Deloy (triễn khai dự án) lên AWS hay Vercel (hiện chạy localhost).
-   - Chưa có kinh nghiệm xử lý thanh toán thật.
+---
+**Chúc bạn sử dụng hệ thống thành công!**
