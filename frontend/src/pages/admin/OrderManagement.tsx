@@ -399,29 +399,29 @@ const OrderManagement = () => {
                             <td className="px-4 py-4">
                               <div className="flex items-center gap-3">
                                 <div className="flex-shrink-0 h-14 w-14">
-                                  <img 
-                                    className="h-14 w-14 rounded-lg object-cover border border-gray-200 shadow-sm" 
-                                    src={item.SanPham?.HinhAnh 
-                                      ? (item.SanPham.HinhAnh.startsWith('/uploads') 
-                                          ? `http://localhost:5000${item.SanPham.HinhAnh}`
-                                          : item.SanPham.HinhAnh)
-                                      : "/images/placeholder-56x56.png"
-                                    } 
-                                    alt={item.SanPham?.TenSanPham || "Sản phẩm"}
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = "/images/placeholder-56x56.png";
-                                    }}
-                                  />
+                                <img 
+                                  className="h-14 w-14 rounded-lg object-cover border border-gray-200 shadow-sm" 
+                                  src={item.HinhAnh 
+                                    ? (item.HinhAnh.startsWith('/uploads') 
+                                        ? `http://localhost:5000${item.HinhAnh}`
+                                        : item.HinhAnh)
+                                    : "/images/placeholder-56x56.png"
+                                  } 
+                                  alt={item.TenSanPham || "Sản phẩm"}
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/images/placeholder-56x56.png";
+                                  }}
+                                />
                                 </div>
                                 <div>
-                                  <div className="text-base font-semibold text-gray-900">
-                                    {item.SanPham?.TenSanPham || 'Sản phẩm không xác định'}
-                                  </div>
-                                  <div className="text-xs text-gray-500">Mã: {item.MaSanPham}</div>
-                                </div>
-                              </div>
-                            </td>
+                                   <div className="text-base font-semibold text-gray-900">
+                                     {item.TenSanPham || 'Sản phẩm không xác định'}
+                                   </div>
+                                   <div className="text-xs text-gray-500">Mã: {item.MaSanPham}</div>
+                                 </div>
+                               </div>
+                             </td>
                             <td className="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-700">{item.SoLuong}</td>
                             <td className="px-4 py-4 whitespace-nowrap text-right text-sm text-gray-700">{formatCurrency(item.DonGia)}</td>
                             <td className="px-4 py-4 whitespace-nowrap text-right text-base font-bold text-pink-600">{formatCurrency(item.ThanhTien)}</td>

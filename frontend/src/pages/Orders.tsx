@@ -213,17 +213,17 @@ const Orders = () => {
                                 to={`/products/${item.MaSanPham}`}
                                 className="font-medium hover:text-pink-500"
                               >
-                                {item.SanPham ? item.SanPham.TenSanPham : 'Sản phẩm không xác định'}
-                              </Link>
-                              <p className="text-sm text-gray-600">
-                                {formatPrice(item.DonGia)} x {item.SoLuong}
-                              </p>
-                            </div>
-                            <div className="font-medium text-right">
-                              {formatPrice(item.ThanhTien)}
-                            </div>
-                          </div>
-                        ))}
+                          {item.SanPham ? item.SanPham.TenSanPham : 'Sản phẩm không xác định'}
+                        </Link>
+                        <p className="text-sm text-gray-600">
+                          {formatPrice(item.DonGia)} x {item.SoLuong}
+                        </p>
+                      </div>
+                      <div className="font-medium text-right">
+                        {formatPrice(item.ThanhTien)}
+                      </div>
+                    </div>
+                  ))}
                       </div>
 
                       {/* Order Summary */}

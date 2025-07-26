@@ -145,4 +145,19 @@ class OrderController {
             echo json_encode(['message' => 'Lỗi khi xóa đơn hàng']);
         }
     }
-} 
+
+    // GET /api/admin/orders/by-customer/{id}
+    public function getOrdersByCustomerIdAdmin($id, $input, $query) {
+        require_once __DIR__ . '/../models/OrderDetailModel.php';
+        $orderDetailModel = new OrderDetailModel();
+
+        $page = isset($query['page']) ? intval($query['page']) : 1;
+        $limit = isset($query['limit']) ? intval($query['limit']) : 10;
+        $orders = $this->orderModel->getOrdersByCustomerId($id, $page, $limit);
+        foreach ($orders as &$order) {
+            $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
+            $order['ChiTietHoaDons'] = $orderDetails;
+        }
+        echo json_encode($orders);
+    }
+}

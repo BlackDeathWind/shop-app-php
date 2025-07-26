@@ -50,5 +50,6 @@ return [
     // Admin Orders
     ['method' => 'GET', 'path' => '/api/admin/orders', 'controller' => 'OrderController', 'action' => 'get', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
     ['method' => 'GET', 'path' => '/api/admin/orders/{id}', 'controller' => 'OrderController', 'action' => 'get', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
+    ['method' => 'GET', 'path' => '/api/admin/orders/by-customer/{id}', 'controller' => 'OrderController', 'action' => 'getOrdersByCustomerIdAdmin', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
     ['method' => 'PUT', 'path' => '/api/admin/orders/{id}', 'controller' => 'OrderController', 'action' => 'put', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
 ];
