@@ -51,7 +51,7 @@ export const getAllCustomers = async (page = 1, limit = 10): Promise<{
   users: UserResponse[];
 }> => {
   const response = await api.get(`${API_ENDPOINTS.ADMIN.USERS.GET_ALL_CUSTOMERS}?page=${page}&limit=${limit}`);
-  return { ...response.data, users: response.data.customers };
+  return { ...response.data, users: response.data.users };
 };
 
 export const getAllStaff = async (page = 1, limit = 10): Promise<{
@@ -61,7 +61,7 @@ export const getAllStaff = async (page = 1, limit = 10): Promise<{
   users: UserResponse[];
 }> => {
   const response = await api.get(`${API_ENDPOINTS.ADMIN.USERS.GET_ALL_STAFF}?page=${page}&limit=${limit}`);
-  return { ...response.data, users: response.data.staff };
+  return { ...response.data, users: response.data.users };
 };
 
 export const getUserById = async (id: number): Promise<UserResponse> => {
