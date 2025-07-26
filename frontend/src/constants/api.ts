@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
   PRODUCT: {
     GET_ALL: `${API_BASE_URL}/products`,
     GET_BY_ID: (id: number) => `${API_BASE_URL}/products/${id}`,
-    GET_BY_CATEGORY: (categoryId: number) => `${API_BASE_URL}/products?categoryId=${categoryId}`,
+    GET_BY_CATEGORY: (categoryId: number) => `${API_BASE_URL}/products/category/${categoryId}`,
     SEARCH: `${API_BASE_URL}/products/search`, // cần chỉnh lại nếu PHP có hỗ trợ
     CREATE: `${API_BASE_URL}/products`,
     UPDATE: (id: number) => `${API_BASE_URL}/products/${id}`,

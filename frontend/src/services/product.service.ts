@@ -35,15 +35,9 @@ export const getProductById = async (id: number): Promise<ProductResponse> => {
 };
 
 export const getProductsByCategory = async (categoryId: number, page = 1, limit = 10): Promise<ProductListResponse> => {
-  // PHP backend: filter trên frontend nếu không có endpoint riêng
-  const response = await api.get(`${API_ENDPOINTS.PRODUCT.GET_ALL}?page=${page}&limit=${limit}`);
-  const all = response.data.products.filter((p: ProductResponse) => p.MaDanhMuc === categoryId);
-  return {
-    total: all.length,
-    totalPages: Math.ceil(all.length / limit),
-    currentPage: page,
-    products: all.slice((page - 1) * limit, page * limit)
-  };
+  // Gọi API backend trả về sản phẩm theo danh mục, hỗ trợ phân trang
+  const response = await api.get(`${API_ENDPOINTS.PRODUCT.GET_BY_CATEGORY(categoryId)}?page=${page}&limit=${limit}`);
+  return response.data;
 };
 
 export const searchProducts = async (query: string, page = 1, limit = 10): Promise<ProductListResponse> => {

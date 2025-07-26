@@ -21,6 +21,7 @@ return [
     // Product
     ['method' => 'GET', 'path' => '/api/products', 'controller' => 'ProductController', 'action' => 'get'],
     ['method' => 'GET', 'path' => '/api/products/{id}', 'controller' => 'ProductController', 'action' => 'get'],
+    ['method' => 'GET', 'path' => '/api/products/category/{categoryId}', 'controller' => 'ProductController', 'action' => 'getByCategory'],
     ['method' => 'POST', 'path' => '/api/products', 'controller' => 'ProductController', 'action' => 'post', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
     ['method' => 'PUT', 'path' => '/api/products/{id}', 'controller' => 'ProductController', 'action' => 'put', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
     ['method' => 'DELETE', 'path' => '/api/products/{id}', 'controller' => 'ProductController', 'action' => 'delete', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],

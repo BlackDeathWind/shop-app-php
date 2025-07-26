@@ -23,6 +23,13 @@ class ProductController {
             echo json_encode($products);
         }
     }
+    // GET /api/products/category/{categoryId}
+    public function getByCategory($categoryId, $input, $query) {
+        $page = isset($query['page']) ? intval($query['page']) : 1;
+        $limit = isset($query['limit']) ? intval($query['limit']) : 10;
+        $products = $this->productModel->getProductsByCategory($categoryId, $page, $limit);
+        echo json_encode($products);
+    }
     // POST /api/products
     public function post($id, $input, $query) {
         $newId = $this->productModel->createProduct($input);
