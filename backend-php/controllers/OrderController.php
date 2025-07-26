@@ -43,6 +43,17 @@ class OrderController {
             $orders = $this->orderModel->getOrdersByCustomerId($query['customerId']);
             foreach ($orders as &$order) {
                 $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
+                // Transform each order detail to nest product info into SanPham object
+                foreach ($orderDetails as &$detail) {
+                    $detail['SanPham'] = [
+                        'MaSanPham' => $detail['MaSanPham'],
+                        'TenSanPham' => $detail['TenSanPham'],
+                        'GiaSanPham' => $detail['GiaSanPham'],
+                        'HinhAnh' => $detail['HinhAnh']
+                    ];
+                    // Remove the flat product fields from detail
+                    unset($detail['TenSanPham'], $detail['GiaSanPham'], $detail['HinhAnh']);
+                }
                 $order['ChiTietHoaDons'] = $orderDetails;
             }
             echo json_encode($orders);
@@ -72,8 +83,18 @@ class OrderController {
                 $limit = isset($query['limit']) ? intval($query['limit']) : 10;
                 $orders = $this->orderModel->getOrdersByCustomerId($user->MaKhachHang, $page, $limit);
                 foreach ($orders as &$order) {
-                    $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
-                    $order['ChiTietHoaDons'] = $orderDetails;
+                $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
+                // Transform each order detail to nest product info into SanPham object
+                foreach ($orderDetails as &$detail) {
+                    $detail['SanPham'] = [
+                        'MaSanPham' => $detail['MaSanPham'],
+                        'TenSanPham' => $detail['TenSanPham'],
+                        'GiaSanPham' => $detail['GiaSanPham'],
+                        'HinhAnh' => $detail['HinhAnh']
+                    ];
+                    unset($detail['TenSanPham'], $detail['GiaSanPham'], $detail['HinhAnh']);
+                }
+                $order['ChiTietHoaDons'] = $orderDetails;
                 }
                 echo json_encode($orders);
             } else {
@@ -155,8 +176,18 @@ class OrderController {
         $limit = isset($query['limit']) ? intval($query['limit']) : 10;
         $orders = $this->orderModel->getOrdersByCustomerId($id, $page, $limit);
         foreach ($orders as &$order) {
-            $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
-            $order['ChiTietHoaDons'] = $orderDetails;
+                $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
+                // Transform each order detail to nest product info into SanPham object
+                foreach ($orderDetails as &$detail) {
+                    $detail['SanPham'] = [
+                        'MaSanPham' => $detail['MaSanPham'],
+                        'TenSanPham' => $detail['TenSanPham'],
+                        'GiaSanPham' => $detail['GiaSanPham'],
+                        'HinhAnh' => $detail['HinhAnh']
+                    ];
+                    unset($detail['TenSanPham'], $detail['GiaSanPham'], $detail['HinhAnh']);
+                }
+                $order['ChiTietHoaDons'] = $orderDetails;
         }
         echo json_encode($orders);
     }
