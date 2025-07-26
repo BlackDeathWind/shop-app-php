@@ -7,6 +7,7 @@ import api from '../services/api';
 import { API_ENDPOINTS } from '../constants/api';
 import { formatPrice, formatDate } from '../utils/format';
 import { getStatusColor } from '../utils/order';
+// import { OrderResponse } from '../services/order.service';
 
 interface OrderDetail {
   MaSanPham: number;
@@ -31,7 +32,7 @@ interface Order {
 }
 
 const Orders = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
@@ -53,14 +54,15 @@ const Orders = () => {
           setError(null);
           
           console.log('Đang tải đơn hàng của khách hàng');
-          const response = await api.get(API_ENDPOINTS.ORDER.GET_MY_ORDERS);
+          // Sử dụng hàm getMyOrders đã xử lý customerId đúng
+          const response = await import('../services/order.service').then(mod => mod.getMyOrders());
           
           // Kiểm tra dữ liệu trả về
-          if (Array.isArray(response.data)) {
-            console.log(`Đã tải ${response.data.length} đơn hàng`);
-            setOrders(response.data);
+          if (Array.isArray(response)) {
+            console.log(`Đã tải ${response.length} đơn hàng`);
+            setOrders(response);
           } else {
-            console.error('Định dạng dữ liệu không hợp lệ:', response.data);
+            console.error('Định dạng dữ liệu không hợp lệ:', response);
             setOrders([]);
             setError('Không thể tải đơn hàng do định dạng dữ liệu không hợp lệ');
           }
@@ -184,7 +186,7 @@ const Orders = () => {
                         {order.ChiTietHoaDons?.map((item) => (
                           <div key={item.MaSanPham} className="flex items-center gap-4 p-3 border rounded-md">
                             <div className="w-16 h-16 shrink-0 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
-                              {item.SanPham.HinhAnh ? (
+                              {item.SanPham && item.SanPham.HinhAnh ? (
                                 <img
                                   src={item.SanPham.HinhAnh.startsWith('/uploads') 
                                     ? `http://localhost:5000${item.SanPham.HinhAnh}` 
@@ -209,7 +211,7 @@ const Orders = () => {
                                 to={`/products/${item.MaSanPham}`}
                                 className="font-medium hover:text-pink-500"
                               >
-                                {item.SanPham.TenSanPham}
+                                {item.SanPham ? item.SanPham.TenSanPham : 'Sản phẩm không xác định'}
                               </Link>
                               <p className="text-sm text-gray-600">
                                 {formatPrice(item.DonGia)} x {item.SoLuong}

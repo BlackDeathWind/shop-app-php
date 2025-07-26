@@ -20,7 +20,14 @@ class OrderController {
                 echo json_encode(['message' => 'Đơn hàng không tồn tại']);
             }
         } else if (isset($query['customerId'])) {
+            require_once __DIR__ . '/../models/OrderDetailModel.php';
+            $orderDetailModel = new OrderDetailModel();
+
             $orders = $this->orderModel->getOrdersByCustomerId($query['customerId']);
+            foreach ($orders as &$order) {
+                $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
+                $order['ChiTietHoaDons'] = $orderDetails;
+            }
             echo json_encode($orders);
         } else if ($user) {
             if (isset($user->MaVaiTro) && ($user->MaVaiTro == 0 || $user->MaVaiTro == 1)) {
@@ -30,9 +37,16 @@ class OrderController {
                 $data = $this->orderModel->getAllOrders($page, $limit);
                 echo json_encode($data);
             } else if (isset($user->MaVaiTro) && $user->MaVaiTro == 2 && isset($user->MaKhachHang)) {
+                require_once __DIR__ . '/../models/OrderDetailModel.php';
+                $orderDetailModel = new OrderDetailModel();
+
                 $page = isset($query['page']) ? intval($query['page']) : 1;
                 $limit = isset($query['limit']) ? intval($query['limit']) : 10;
                 $orders = $this->orderModel->getOrdersByCustomerId($user->MaKhachHang, $page, $limit);
+                foreach ($orders as &$order) {
+                    $orderDetails = $orderDetailModel->getOrderDetailsByOrderId($order['MaHoaDon']);
+                    $order['ChiTietHoaDons'] = $orderDetails;
+                }
                 echo json_encode($orders);
             } else {
                 // Nếu không phải khách hàng hoặc thiếu MaKhachHang, trả về mảng rỗng
