@@ -4,7 +4,7 @@ export const API_BASE_URL = 'http://localhost/shop-app/backend-php/index.php/api
 // API endpoints
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: `${API_BASE_URL}/auth`,
+    LOGIN: `${API_BASE_URL}/auth/login`,
     REGISTER: `${API_BASE_URL}/auth/register`,
     LOGOUT: `${API_BASE_URL}/auth/logout`,
     // PHP không có refresh, me
@@ -39,10 +39,21 @@ export const API_ENDPOINTS = {
   },
   ADMIN: {
     DASHBOARD_SUMMARY: `${API_BASE_URL}/admin/dashboard`,
-    // Các endpoint khác sẽ mapping tương tự
+    USERS: {
+      GET_ALL_CUSTOMERS: `${API_BASE_URL}/admin/users/customers`,
+      GET_ALL_STAFF: `${API_BASE_URL}/admin/users/staff`,
+      GET_BY_ID: (id: number) => `${API_BASE_URL}/admin/users/${id}`,
+      CREATE: `${API_BASE_URL}/admin/users`,
+      UPDATE: (id: number) => `${API_BASE_URL}/admin/users/${id}`
+    },
+    ORDERS: {
+      GET_ALL: `${API_BASE_URL}/admin/orders`,
+      GET_BY_ID: (id: number) => `${API_BASE_URL}/admin/orders/${id}`,
+      UPDATE_STATUS: (id: number) => `${API_BASE_URL}/admin/orders/${id}`
+    }
   },
   UPLOAD: {
     SINGLE: `${API_BASE_URL}/upload`,
     MULTIPLE: `${API_BASE_URL}/upload/multiple`
   }
-}; 
+};

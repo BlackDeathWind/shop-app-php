@@ -2,7 +2,7 @@
 // routes/web.php
 return [
     // Auth
-    ['method' => 'POST', 'path' => '/api/auth', 'controller' => 'AuthController', 'action' => 'post'],
+    ['method' => 'POST', 'path' => '/api/auth/login', 'controller' => 'AuthController', 'action' => 'post'],
     ['method' => 'POST', 'path' => '/api/auth/register', 'controller' => 'AuthController', 'action' => 'register'],
     ['method' => 'POST', 'path' => '/api/auth/logout', 'controller' => 'AuthController', 'action' => 'logout'],
 
@@ -45,4 +45,10 @@ return [
 
     // Admin
     ['method' => 'GET', 'path' => '/api/admin/dashboard', 'controller' => 'AdminController', 'action' => 'get', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
-]; 
+    ['method' => 'GET', 'path' => '/api/admin/users/customers', 'controller' => 'UserController', 'action' => 'getAllCustomers', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
+    ['method' => 'GET', 'path' => '/api/admin/users/staff', 'controller' => 'UserController', 'action' => 'getAllStaff', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
+    // Admin Orders
+    ['method' => 'GET', 'path' => '/api/admin/orders', 'controller' => 'OrderController', 'action' => 'get', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
+    ['method' => 'GET', 'path' => '/api/admin/orders/{id}', 'controller' => 'OrderController', 'action' => 'get', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
+    ['method' => 'PUT', 'path' => '/api/admin/orders/{id}', 'controller' => 'OrderController', 'action' => 'put', 'middleware' => 'RoleMiddleware', 'roles' => [0,1]],
+];

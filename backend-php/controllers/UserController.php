@@ -79,4 +79,36 @@ class UserController {
             echo json_encode(['message' => 'Lỗi khi đổi mật khẩu']);
         }
     }
-} 
+
+    // GET /api/admin/users/customers
+    public function getAllCustomers($id, $input, $query) {
+        $page = isset($query['page']) ? intval($query['page']) : 1;
+        $limit = isset($query['limit']) ? intval($query['limit']) : 10;
+        $result = $this->userModel->getAllCustomers($page, $limit);
+        if ($result) {
+            foreach ($result['users'] as &$user) {
+                unset($user['MatKhau']);
+            }
+            echo json_encode($result);
+        } else {
+            http_response_code(500);
+            echo json_encode(['message' => 'Lỗi khi lấy danh sách khách hàng']);
+        }
+    }
+
+    // GET /api/admin/users/staff
+    public function getAllStaff($id, $input, $query) {
+        $page = isset($query['page']) ? intval($query['page']) : 1;
+        $limit = isset($query['limit']) ? intval($query['limit']) : 10;
+        $result = $this->userModel->getAllStaff($page, $limit);
+        if ($result) {
+            foreach ($result['users'] as &$user) {
+                unset($user['MatKhau']);
+            }
+            echo json_encode($result);
+        } else {
+            http_response_code(500);
+            echo json_encode(['message' => 'Lỗi khi lấy danh sách nhân viên']);
+        }
+    }
+}

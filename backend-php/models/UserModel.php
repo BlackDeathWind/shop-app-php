@@ -59,4 +59,40 @@ class UserModel extends BaseModel {
             return $this->execute($sql, [$hashedPassword, $id]);
         }
     }
-} 
+
+    // Lấy danh sách khách hàng với phân trang
+    public function getAllCustomers($page = 1, $limit = 10) {
+        $offset = ($page - 1) * $limit;
+        $sql = 'SELECT * FROM KhachHang ORDER BY MaKhachHang DESC LIMIT ? OFFSET ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+        $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $count = $this->conn->query('SELECT COUNT(*) FROM KhachHang')->fetchColumn();
+        return [
+            'total' => intval($count),
+            'totalPages' => ceil($count / $limit),
+            'currentPage' => $page,
+            'users' => $users
+        ];
+    }
+
+    // Lấy danh sách nhân viên với phân trang
+    public function getAllStaff($page = 1, $limit = 10) {
+        $offset = ($page - 1) * $limit;
+        $sql = 'SELECT * FROM NhanVien ORDER BY MaNhanVien DESC LIMIT ? OFFSET ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+        $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $count = $this->conn->query('SELECT COUNT(*) FROM NhanVien')->fetchColumn();
+        return [
+            'total' => intval($count),
+            'totalPages' => ceil($count / $limit),
+            'currentPage' => $page,
+            'users' => $users
+        ];
+    }
+}

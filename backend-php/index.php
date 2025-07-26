@@ -73,7 +73,9 @@ foreach ($routes as $route) {
         // Middleware
         if (isset($route['middleware'])) {
             if ($route['middleware'] === 'AuthMiddleware') {
-                AuthMiddleware::check();
+                // Chuyển sang dùng JwtMiddleware
+                require_once __DIR__ . '/middlewares/JwtMiddleware.php';
+                JwtMiddleware::check();
             } elseif ($route['middleware'] === 'RoleMiddleware') {
                 $roles = $route['roles'] ?? [];
                 RoleMiddleware::check($roles);

@@ -3,7 +3,7 @@ require_once 'BaseModel.php';
 class OrderModel extends BaseModel {
     public function getAllOrders($page = 1, $limit = 10) {
         $offset = ($page - 1) * $limit;
-        $sql = 'SELECT * FROM HoaDon ORDER BY NgayLap DESC LIMIT ? OFFSET ?';
+        $sql = 'SELECT HoaDon.*, KhachHang.TenKhachHang, KhachHang.SoDienThoai FROM HoaDon LEFT JOIN KhachHang ON HoaDon.MaKhachHang = KhachHang.MaKhachHang ORDER BY HoaDon.NgayLap DESC LIMIT ? OFFSET ?';
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(1, $limit, PDO::PARAM_INT);
         $stmt->bindValue(2, $offset, PDO::PARAM_INT);

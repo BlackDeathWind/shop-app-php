@@ -105,6 +105,7 @@ const Checkout = () => {
         PhuongThucTT: formData.phuongThucTT,
         DiaChi: formData.diaChi,
         TongTien: calculateTotalPrice(),
+        MaKhachHang: user?.MaKhachHang, // Thêm trường MaKhachHang từ user hiện tại
         items: cart.map(item => ({
           MaSanPham: item.productId,
           SoLuong: item.quantity,

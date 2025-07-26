@@ -101,7 +101,15 @@ const ProductsByCategory = () => {
   const addToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
+    if (!product) {
+      addToast('Sản phẩm không hợp lệ, không thể thêm vào giỏ hàng', 'error');
+      return;
+    }
+
+    // Nếu product.DanhMuc không tồn tại, tạo đối tượng DanhMuc giả với MaDanhMuc lấy từ product.MaDanhMuc
+    const category = product.DanhMuc ?? { MaDanhMuc: (product as any).MaDanhMuc ?? 0, TenDanhMuc: '' };
+
     // Chuyển đổi Product thành ProductResponse để phù hợp với interface yêu cầu
     const productForCart: ProductResponse = {
       MaSanPham: product.MaSanPham,
@@ -109,10 +117,10 @@ const ProductsByCategory = () => {
       GiaSanPham: product.GiaSanPham,
       SoLuong: product.SoLuong,
       HinhAnh: product.HinhAnh,
-      MaDanhMuc: product.DanhMuc.MaDanhMuc,
-      DanhMuc: product.DanhMuc
+      MaDanhMuc: category.MaDanhMuc,
+      DanhMuc: category
     };
-    
+
     // Sử dụng hàm addItem từ CartContext
     addItem(productForCart, 1);
     addToast(`Đã thêm ${product.TenSanPham} vào giỏ hàng!`, 'success');
@@ -232,6 +240,8 @@ const ProductsByCategory = () => {
                               <button 
                                 className="bg-pink-500 hover:bg-pink-600 text-white text-sm px-3 py-1 rounded-full transition-colors"
                                 onClick={(e) => addToCart(e, product)}
+                                title={`Thêm ${product.TenSanPham} vào giỏ hàng`}
+                                aria-label={`Thêm ${product.TenSanPham} vào giỏ hàng`}
                               >
                                 <ShoppingCart size={16} />
                               </button>
@@ -254,22 +264,26 @@ const ProductsByCategory = () => {
                               ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                               : 'bg-white text-gray-700 hover:bg-pink-500 hover:text-white'
                           }`}
+                          title="Trang trước"
+                          aria-label="Trang trước"
                         >
                           <ChevronLeft size={20} />
                         </button>
 
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`px-4 py-2 rounded-md ${
-                              currentPage === page
-                                ? 'bg-pink-500 text-white'
-                                : 'bg-white text-gray-700 hover:bg-pink-500 hover:text-white'
-                            }`}
-                          >
-                            {page}
-                          </button>
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-4 py-2 rounded-md ${
+                            currentPage === page
+                              ? 'bg-pink-500 text-white'
+                              : 'bg-white text-gray-700 hover:bg-pink-500 hover:text-white'
+                          }`}
+                          title={`Trang ${page}`}
+                          aria-label={`Trang ${page}`}
+                        >
+                          {page}
+                        </button>
                         ))}
 
                         <button
@@ -280,6 +294,8 @@ const ProductsByCategory = () => {
                               ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                               : 'bg-white text-gray-700 hover:bg-pink-500 hover:text-white'
                           }`}
+                          title="Trang tiếp"
+                          aria-label="Trang tiếp"
                         >
                           <ChevronRight size={20} />
                         </button>

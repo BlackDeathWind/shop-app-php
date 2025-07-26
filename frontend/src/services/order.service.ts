@@ -58,9 +58,20 @@ export const createOrder = async (orderData: OrderRequest): Promise<OrderRespons
 export const getMyOrders = async (): Promise<OrderResponse[]> => {
   try {
     console.log('Gọi API lấy đơn hàng của tôi');
-    const response = await api.get(API_ENDPOINTS.ORDER.GET_MY_ORDERS);
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+      console.error('Không tìm thấy thông tin người dùng');
+      return [];
+    }
+    const user = JSON.parse(userString);
+    const customerId = user.MaKhachHang;
+    if (!customerId) {
+      console.error('Người dùng không có mã khách hàng');
+      return [];
+    }
+    const url = API_ENDPOINTS.ORDER.GET_MY_ORDERS.replace('ME', customerId.toString());
+    const response = await api.get(url);
     
-    // Kiểm tra dữ liệu trả về
     if (!response.data) {
       console.error('Không có dữ liệu đơn hàng');
       return [];
@@ -75,22 +86,12 @@ export const getMyOrders = async (): Promise<OrderResponse[]> => {
 };
 
 export const getOrderById = async (id: number): Promise<OrderResponse> => {
-  // Đối với admin, sử dụng endpoint ADMIN
-  let url = '';
-  
-  // Kiểm tra người dùng có phải là admin không
   const userRole = localStorage.getItem('role');
-  if (userRole === '1') {
-    url = API_ENDPOINTS.ADMIN.ORDERS.GET_BY_ID(id);
-  } else {
-    url = API_ENDPOINTS.ORDER.GET_BY_ID(id);
-  }
-  
+  const url = userRole === '1' ? API_ENDPOINTS.ADMIN.ORDERS.GET_BY_ID(id) : API_ENDPOINTS.ORDER.GET_BY_ID(id);
   const response = await api.get(url);
   return response.data;
 };
 
-// Admin functions
 export const getAllOrders = async (page = 1, limit = 10): Promise<{
   total: number;
   totalPages: number;
@@ -109,4 +110,4 @@ export const updateOrderStatus = async (id: number, status: string): Promise<Ord
 export const getOrdersByCustomerId = async (customerId: number): Promise<OrderResponse[]> => {
   const response = await api.get(`${API_ENDPOINTS.ADMIN.ORDERS.GET_ALL}/by-customer/${customerId}`);
   return response.data;
-}; 
+};

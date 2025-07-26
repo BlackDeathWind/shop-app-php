@@ -8,6 +8,9 @@ class OrderController {
     }
     // GET /api/orders or /api/orders/{id}
     public function get($id, $input, $query) {
+        require_once __DIR__ . '/../middlewares/JwtMiddleware.php';
+        $user = JwtMiddleware::getUser();
+
         if ($id) {
             $order = $this->orderModel->getOrderById($id);
             if ($order) {
@@ -19,21 +22,55 @@ class OrderController {
         } else if (isset($query['customerId'])) {
             $orders = $this->orderModel->getOrdersByCustomerId($query['customerId']);
             echo json_encode($orders);
+        } else if ($user) {
+            if (isset($user->MaVaiTro) && ($user->MaVaiTro == 0 || $user->MaVaiTro == 1)) {
+                // Admin or staff: return paginated orders with customer info
+                $page = isset($query['page']) ? intval($query['page']) : 1;
+                $limit = isset($query['limit']) ? intval($query['limit']) : 10;
+                $data = $this->orderModel->getAllOrders($page, $limit);
+                echo json_encode($data);
+            } else if (isset($user->MaVaiTro) && $user->MaVaiTro == 2 && isset($user->MaKhachHang)) {
+                $page = isset($query['page']) ? intval($query['page']) : 1;
+                $limit = isset($query['limit']) ? intval($query['limit']) : 10;
+                $orders = $this->orderModel->getOrdersByCustomerId($user->MaKhachHang, $page, $limit);
+                echo json_encode($orders);
+            } else {
+                // Nếu không phải khách hàng hoặc thiếu MaKhachHang, trả về mảng rỗng
+                echo json_encode([]);
+            }
         } else {
-            $page = isset($query['page']) ? intval($query['page']) : 1;
-            $limit = isset($query['limit']) ? intval($query['limit']) : 10;
-            $orders = $this->orderModel->getAllOrders($page, $limit);
-            echo json_encode($orders);
+            http_response_code(401);
+            echo json_encode(['message' => 'Chưa xác thực người dùng']);
         }
     }
     // POST /api/orders
     public function post($id, $input, $query) {
-        $newId = $this->orderModel->createOrder($input);
-        if ($newId) {
-            echo json_encode(['message' => 'Tạo đơn hàng thành công', 'id' => $newId]);
-        } else {
+        require_once __DIR__ . '/../models/OrderDetailModel.php';
+        $orderDetailModel = new OrderDetailModel();
+
+        $this->orderModel->conn->beginTransaction();
+        try {
+            $newOrderId = $this->orderModel->createOrder($input);
+            if (!$newOrderId) {
+                throw new Exception('Lỗi khi tạo đơn hàng');
+            }
+
+            if (isset($input['items']) && is_array($input['items'])) {
+                foreach ($input['items'] as $item) {
+                    $item['MaHoaDon'] = $newOrderId;
+                    $newDetailId = $orderDetailModel->createOrderDetail($item);
+                    if (!$newDetailId) {
+                        throw new Exception('Lỗi khi tạo chi tiết đơn hàng');
+                    }
+                }
+            }
+
+            $this->orderModel->conn->commit();
+            echo json_encode(['message' => 'Tạo đơn hàng thành công', 'id' => $newOrderId]);
+        } catch (Exception $e) {
+            $this->orderModel->conn->rollBack();
             http_response_code(500);
-            echo json_encode(['message' => 'Lỗi khi tạo đơn hàng']);
+            echo json_encode(['message' => $e->getMessage()]);
         }
     }
     // PUT /api/orders/{id}
