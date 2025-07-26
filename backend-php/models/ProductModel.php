@@ -18,8 +18,21 @@ class ProductModel extends BaseModel {
         ];
     }
     public function getProductById($id) {
-        $sql = 'SELECT * FROM SanPham WHERE MaSanPham = ?';
-        return $this->fetchOne($sql, [$id]);
+        $sql = 'SELECT sp.*, dm.MaDanhMuc as DanhMuc_MaDanhMuc, dm.TenDanhMuc as DanhMuc_TenDanhMuc, dm.HinhAnh as DanhMuc_HinhAnh
+                FROM SanPham sp
+                LEFT JOIN DanhMuc dm ON sp.MaDanhMuc = dm.MaDanhMuc
+                WHERE sp.MaSanPham = ?';
+        $product = $this->fetchOne($sql, [$id]);
+        if ($product) {
+            // Map DanhMuc fields to nested array
+            $product['DanhMuc'] = [
+                'MaDanhMuc' => $product['DanhMuc_MaDanhMuc'],
+                'TenDanhMuc' => $product['DanhMuc_TenDanhMuc'],
+                'HinhAnh' => $product['DanhMuc_HinhAnh']
+            ];
+            unset($product['DanhMuc_MaDanhMuc'], $product['DanhMuc_TenDanhMuc'], $product['DanhMuc_HinhAnh']);
+        }
+        return $product;
     }
     public function createProduct($data) {
         $sql = 'INSERT INTO SanPham (TenSanPham, MaDanhMuc, MoTa, SoLuong, GiaSanPham, HinhAnh) VALUES (?, ?, ?, ?, ?, ?)';

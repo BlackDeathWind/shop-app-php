@@ -17,7 +17,15 @@ spl_autoload_register(function ($class) {
 });
 
 // Xử lý CORS
-header('Access-Control-Allow-Origin: *');
+// Thay đổi để hỗ trợ gửi cookie session qua CORS
+$allowedOrigins = ['http://localhost:5173', 'http://localhost:5174']; // frontend URLs
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Credentials: true');
+} else {
+    header('Access-Control-Allow-Origin: *');
+}
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -35,6 +43,12 @@ $uri = trim($uri, '/');
 $basePath = 'shop-app/backend-php';
 if (strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
+    $uri = trim($uri, '/');
+}
+
+// Xử lý loại bỏ tiền tố "index.php" trong URI nếu có
+if (strpos($uri, 'index.php') === 0) {
+    $uri = substr($uri, strlen('index.php'));
     $uri = trim($uri, '/');
 }
 
