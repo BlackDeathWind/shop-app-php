@@ -14,10 +14,11 @@ interface OrderDetail {
   SoLuong: number;
   DonGia: number;
   ThanhTien: number;
-  SanPham: {
+  SanPham?: {
     MaSanPham: number;
     TenSanPham: string;
-    HinhAnh: string;
+    GiaSanPham: number;
+    HinhAnh?: string;
   };
 }
 
@@ -28,11 +29,11 @@ interface Order {
   PhuongThucTT: string;
   DiaChi: string;
   TrangThai: string;
-  ChiTietHoaDons: OrderDetail[];
+  ChiTietHoaDons?: OrderDetail[];
 }
 
 const Orders = () => {
-  const [orders, setOrders] = useState<OrderResponse[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
@@ -167,6 +168,7 @@ const Orders = () => {
                         <button
                           onClick={() => toggleOrderDetails(order.MaHoaDon)}
                           className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-full transition"
+                          title={expandedOrder === order.MaHoaDon ? 'Thu gọn chi tiết' : 'Mở rộng chi tiết'}
                         >
                           <ChevronDown 
                             className={`h-5 w-5 transform transition-transform ${expandedOrder === order.MaHoaDon ? 'rotate-180' : ''}`} 

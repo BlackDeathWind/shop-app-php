@@ -405,12 +405,12 @@ const OrderManagement = () => {
                                       ? (item.SanPham.HinhAnh.startsWith('/uploads') 
                                           ? `http://localhost:5000${item.SanPham.HinhAnh}`
                                           : item.SanPham.HinhAnh)
-                                      : "https://via.placeholder.com/56x56?text=SP"
+                                      : "/images/placeholder-56x56.png"
                                     } 
                                     alt={item.SanPham?.TenSanPham || "Sản phẩm"}
                                     onError={(e) => {
                                       e.currentTarget.onerror = null;
-                                      e.currentTarget.src = "https://via.placeholder.com/56x56?text=SP";
+                                      e.currentTarget.src = "/images/placeholder-56x56.png";
                                     }}
                                   />
                                 </div>

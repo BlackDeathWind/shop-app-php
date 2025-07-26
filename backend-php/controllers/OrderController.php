@@ -1,4 +1,4 @@
-<?php
+    <?php
 require_once __DIR__ . '/../models/OrderModel.php';
 require_once __DIR__ . '/../utils/helpers.php';
 class OrderController {
@@ -12,8 +12,25 @@ class OrderController {
         $user = JwtMiddleware::getUser();
 
         if ($id) {
+            require_once __DIR__ . '/../models/OrderDetailModel.php';
+            require_once __DIR__ . '/../models/UserModel.php';
+
             $order = $this->orderModel->getOrderById($id);
             if ($order) {
+                $orderDetailModel = new OrderDetailModel();
+                $order['ChiTietHoaDons'] = $orderDetailModel->getOrderDetailsByOrderId($id);
+
+                $userModel = new UserModel();
+
+                $order['KhachHang'] = $userModel->getUserById($order['MaKhachHang'], 2);
+                if ($order['KhachHang']) {
+                    unset($order['KhachHang']['MatKhau']);
+                }
+                $order['NhanVien'] = $userModel->getUserById($order['MaNhanVien'], 1);
+                if ($order['NhanVien']) {
+                    unset($order['NhanVien']['MatKhau']);
+                }
+
                 echo json_encode($order);
             } else {
                 http_response_code(404);
@@ -35,6 +52,17 @@ class OrderController {
                 $page = isset($query['page']) ? intval($query['page']) : 1;
                 $limit = isset($query['limit']) ? intval($query['limit']) : 10;
                 $data = $this->orderModel->getAllOrders($page, $limit);
+
+                require_once __DIR__ . '/../models/UserModel.php';
+                $userModel = new UserModel();
+
+                foreach ($data['orders'] as &$order) {
+                    $order['KhachHang'] = $userModel->getUserById($order['MaKhachHang'], 2);
+                    if ($order['KhachHang']) {
+                        unset($order['KhachHang']['MatKhau']);
+                    }
+                }
+
                 echo json_encode($data);
             } else if (isset($user->MaVaiTro) && $user->MaVaiTro == 2 && isset($user->MaKhachHang)) {
                 require_once __DIR__ . '/../models/OrderDetailModel.php';

@@ -2,7 +2,13 @@
 require_once 'BaseModel.php';
 class OrderDetailModel extends BaseModel {
     public function getOrderDetailsByOrderId($orderId) {
-        $sql = 'SELECT * FROM ChiTietHoaDon WHERE MaHoaDon = ?';
+        $sql = 'SELECT ChiTietHoaDon.*, 
+                       SanPham.TenSanPham AS "SanPham.TenSanPham", 
+                       SanPham.GiaSanPham AS "SanPham.GiaSanPham", 
+                       SanPham.HinhAnh AS "SanPham.HinhAnh"
+                FROM ChiTietHoaDon 
+                LEFT JOIN SanPham ON ChiTietHoaDon.MaSanPham = SanPham.MaSanPham 
+                WHERE ChiTietHoaDon.MaHoaDon = ?';
         return $this->fetchAll($sql, [$orderId]);
     }
     public function getOrderDetailById($id) {
