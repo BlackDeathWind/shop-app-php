@@ -19,11 +19,23 @@ class UserModel extends BaseModel {
     public function createUser($data, $role = 2) {
         if ($role == 2) {
             $sql = 'INSERT INTO KhachHang (MaVaiTro, TenKhachHang, SoDienThoai, MatKhau, DiaChi) VALUES (?, ?, ?, ?, ?)';
-            $this->execute($sql, [$data['MaVaiTro'], $data['TenKhachHang'], $data['SoDienThoai'], $data['MatKhau'], $data['DiaChi']]);
+            $this->execute($sql, [
+                $data['MaVaiTro'],
+                $data['TenKhachHang'],
+                $data['SoDienThoai'],
+                $data['MatKhau'],
+                isset($data['DiaChi']) ? $data['DiaChi'] : null
+            ]);
             return $this->lastInsertId();
         } else {
             $sql = 'INSERT INTO NhanVien (MaVaiTro, TenNhanVien, SoDienThoai, MatKhau, DiaChi) VALUES (?, ?, ?, ?, ?)';
-            $this->execute($sql, [$data['MaVaiTro'], $data['TenNhanVien'], $data['SoDienThoai'], $data['MatKhau'], $data['DiaChi']]);
+            $this->execute($sql, [
+                $data['MaVaiTro'],
+                $data['TenNhanVien'],
+                $data['SoDienThoai'],
+                $data['MatKhau'],
+                isset($data['DiaChi']) ? $data['DiaChi'] : null
+            ]);
             return $this->lastInsertId();
         }
     }

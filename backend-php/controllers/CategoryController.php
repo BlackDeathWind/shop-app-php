@@ -8,6 +8,7 @@ class CategoryController {
     }
     // GET /api/categories or /api/categories/{id}
     public function get($id, $input, $query) {
+        header('Content-Type: application/json');
         if ($id) {
             $category = $this->categoryModel->getCategoryById($id);
             if ($category) {
@@ -23,6 +24,7 @@ class CategoryController {
     }
     // POST /api/categories
     public function post($id, $input, $query) {
+        header('Content-Type: application/json');
         $newId = $this->categoryModel->createCategory($input);
         if ($newId) {
             echo json_encode(['message' => 'Tạo danh mục thành công', 'id' => $newId]);
@@ -33,6 +35,7 @@ class CategoryController {
     }
     // PUT /api/categories/{id}
     public function put($id, $input, $query) {
+        header('Content-Type: application/json');
         if (!$id) {
             http_response_code(400);
             echo json_encode(['message' => 'Thiếu ID danh mục']);
@@ -48,6 +51,7 @@ class CategoryController {
     }
     // DELETE /api/categories/{id}
     public function delete($id, $input, $query) {
+        header('Content-Type: application/json');
         if (!$id) {
             http_response_code(400);
             echo json_encode(['message' => 'Thiếu ID danh mục']);
@@ -61,4 +65,4 @@ class CategoryController {
             echo json_encode(['message' => 'Lỗi khi xóa danh mục']);
         }
     }
-} 
+}

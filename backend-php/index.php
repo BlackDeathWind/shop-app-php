@@ -28,6 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Parse URL
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = trim($uri, '/');
+
+// Xử lý loại bỏ base path nếu backend-php không phải thư mục gốc của server
+// Ví dụ: nếu URL là http://localhost/shop-app/backend-php/api/categories
+// thì $uri sẽ là "shop-app/backend-php/api/categories", cần loại bỏ "shop-app/backend-php"
+$basePath = 'shop-app/backend-php';
+if (strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
+    $uri = trim($uri, '/');
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Load routes
