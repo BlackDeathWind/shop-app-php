@@ -111,10 +111,42 @@ class OrderController {
         require_once __DIR__ . '/../models/OrderDetailModel.php';
         $orderDetailModel = new OrderDetailModel();
 
+        // Debug dữ liệu đầu vào
+        $logDir = __DIR__ . '/../logs';
+        $logFile = $logDir . '/order_debug.log';
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0777, true);
+        }
+        $logContent = date('Y-m-d H:i:s') . "\n" . json_encode($input, JSON_UNESCAPED_UNICODE) . "\n";
+        $logResult = @file_put_contents($logFile, $logContent, FILE_APPEND);
+        if ($logResult === false) {
+            error_log('Không ghi được file log: ' . $logFile);
+        }
+
+        // Ép kiểu các trường số về float
+        if (isset($input['TongTien'])) {
+            $input['TongTien'] = floatval($input['TongTien']);
+        }
+        if (isset($input['items']) && is_array($input['items'])) {
+            foreach ($input['items'] as &$item) {
+                if (isset($item['DonGia'])) {
+                    $item['DonGia'] = floatval($item['DonGia']);
+                }
+                if (isset($item['ThanhTien'])) {
+                    $item['ThanhTien'] = floatval($item['ThanhTien']);
+                }
+                if (isset($item['SoLuong'])) {
+                    $item['SoLuong'] = intval($item['SoLuong']);
+                }
+            }
+            unset($item); // break reference
+        }
+
         $this->orderModel->conn->beginTransaction();
         try {
             $newOrderId = $this->orderModel->createOrder($input);
             if (!$newOrderId) {
+                file_put_contents(__DIR__ . '/../logs/order_error.log', date('Y-m-d H:i:s') . "\nLỗi khi tạo đơn hàng\n" . json_encode($input, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
                 throw new Exception('Lỗi khi tạo đơn hàng');
             }
 
@@ -123,6 +155,7 @@ class OrderController {
                     $item['MaHoaDon'] = $newOrderId;
                     $newDetailId = $orderDetailModel->createOrderDetail($item);
                     if (!$newDetailId) {
+                        file_put_contents(__DIR__ . '/../logs/order_error.log', date('Y-m-d H:i:s') . "\nLỗi khi tạo chi tiết đơn hàng\n" . json_encode($item, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
                         throw new Exception('Lỗi khi tạo chi tiết đơn hàng');
                     }
                 }
@@ -132,6 +165,7 @@ class OrderController {
             echo json_encode(['message' => 'Tạo đơn hàng thành công', 'id' => $newOrderId]);
         } catch (Exception $e) {
             $this->orderModel->conn->rollBack();
+            file_put_contents(__DIR__ . '/../logs/order_error.log', date('Y-m-d H:i:s') . "\nException: " . $e->getMessage() . "\n", FILE_APPEND);
             http_response_code(500);
             echo json_encode(['message' => $e->getMessage()]);
         }
