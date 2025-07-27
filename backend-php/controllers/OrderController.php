@@ -142,7 +142,7 @@ class OrderController {
             unset($item); // break reference
         }
 
-        $this->orderModel->conn->beginTransaction();
+        $this->orderModel->getConnection()->beginTransaction();
         try {
             $newOrderId = $this->orderModel->createOrder($input);
             if (!$newOrderId) {
@@ -161,10 +161,10 @@ class OrderController {
                 }
             }
 
-            $this->orderModel->conn->commit();
+            $this->orderModel->getConnection()->commit();
             echo json_encode(['message' => 'Tạo đơn hàng thành công', 'id' => $newOrderId]);
         } catch (Exception $e) {
-            $this->orderModel->conn->rollBack();
+            $this->orderModel->getConnection()->rollBack();
             file_put_contents(__DIR__ . '/../logs/order_error.log', date('Y-m-d H:i:s') . "\nException: " . $e->getMessage() . "\n", FILE_APPEND);
             http_response_code(500);
             echo json_encode(['message' => $e->getMessage()]);

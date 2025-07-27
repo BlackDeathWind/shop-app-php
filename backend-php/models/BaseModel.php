@@ -27,4 +27,9 @@ class BaseModel {
     protected function lastInsertId() {
         return $this->conn->lastInsertId();
     }
-} 
+
+    // Thêm phương thức public để lấy kết nối
+    public function getConnection() {
+        return $this->conn;
+    }
+}
